@@ -1,3 +1,12 @@
-<ul>
- <li *ngFor="let item of getBlogs() ">{{item}}</li>
-</ul>
+<table class="table table-bordered">
+  <tr>
+    <th>#</th>
+    <th>Title</th>
+    <th>Description</th>
+  </tr>
+  <tr *ngFor="let blog of getBlogs()">
+    <td>{{ blog.id }}</td>
+    <td>{{ blog.title }}</td>
+    <td>{{ blog.description }}</td>
+  </tr>
+</table>
