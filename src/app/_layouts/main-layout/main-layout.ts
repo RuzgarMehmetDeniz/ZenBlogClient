@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'main-layout',
+  selector: 'app-main-layout',
   standalone: false,
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.css',
