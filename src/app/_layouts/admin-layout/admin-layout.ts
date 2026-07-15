@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { AuthService } from '../../_services/auth-service';
 
 @Component({
   selector: 'admin-layout',
@@ -8,14 +9,18 @@ import { Component } from '@angular/core';
 })
 export class AdminLayout {
 
+constructor(private authService: AuthService){}
 
 
 
 getUserName(){
+ let decodedToken= this.authService.decodeToken();
+ return decodedToken.name
 }
 
 logout(){
 
+  this.authService.logout();
 }
 
 
