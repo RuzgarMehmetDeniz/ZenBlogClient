@@ -1,5 +1,9 @@
 {
   "editor.suggest.enabled": false,
-  "editor.quickSuggestions": false,
+  "editor.quickSuggestions": {
+    "comments": "off",
+    "strings": "off",
+    "other": "off"
+  },
   "editor.parameterHints.enabled": false
 }

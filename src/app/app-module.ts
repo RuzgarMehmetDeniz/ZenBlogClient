@@ -1,5 +1,7 @@
 import { NgModule, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 import { AppRoutingModule } from './app-routing-module';
 import { App } from './app';
@@ -7,10 +9,12 @@ import { AdminLayout } from './_layouts/admin-layout/admin-layout';
 import { MainLayout } from './_layouts/main-layout/main-layout';
 import { Home } from './_main-components/home/home';
 import { Category } from './_admincomponents/category/category';
+import { Blog } from './_admincomponents/category/blog/blog';
+import { CommentComponent } from './_admincomponents/category/comment/comment';
 
 @NgModule({
-  declarations: [App, AdminLayout, MainLayout, Home, Category],
-  imports: [BrowserModule, AppRoutingModule],
+  declarations: [App, AdminLayout, MainLayout, Home, Category, Blog, CommentComponent],
+  imports: [BrowserModule, CommonModule, AppRoutingModule, FormsModule],
   providers: [provideBrowserGlobalErrorListeners()],
   bootstrap: [App],
 })
