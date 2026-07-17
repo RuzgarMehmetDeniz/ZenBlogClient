@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core'; // 1. ChangeDetectorRef ekledik
 import { MessageDto } from '../../../_models/messageDto';
 import { MessageService } from '../../../_services/message-service';
 import { AuthService } from '../../../_services/auth-service';
 import { SweetalertService } from '../../../_services/sweetalert-service';
-declare const alertify : any;
+
+declare const alertify: any;
 
 @Component({
   selector: 'app-message',
@@ -13,125 +14,123 @@ declare const alertify : any;
 })
 export class Message implements OnInit {
 
-  messages:MessageDto[];
-  unreadMessages: MessageDto[];
-  readMessages: MessageDto[];
-  newMessage: MessageDto= new MessageDto();
-  editMessage:any ={};
-  errors:any= [];
+  messages: MessageDto[] = [];
+  unreadMessages: MessageDto[] = [];
+  readMessages: MessageDto[] = [];
+  newMessage: MessageDto = new MessageDto();
+  editMessage: any = {};
+  errors: any = [];
+
+  constructor(
+    private messageService: MessageService,
+    private authService: AuthService,
+    private swal: SweetalertService,
+    private cdr: ChangeDetectorRef // 2. constructor'a inject ettik
+  ) {}
 
   ngOnInit(): void {
-
     this.getUnReadMessages();
     this.getReadMessages();
-
-
   }
 
-
-  constructor(private messageService : MessageService,
-              private authService: AuthService,
-              private swal : SweetalertService
-  ){
-
-  }
-
-  getmessages(){
-   this.messageService.getAll().subscribe({
-      next: result => this.messages= result.data,
-      error: result => alertify.error("An Error Occured!")
-    })
-  }
-
-  getUnReadMessages(){
-   this.messageService.getUnreadMessages().subscribe({
-      next: result => this.unreadMessages= result.data,
-      error: result => alertify.error("An Error Occured!")
-    })
-  }
-
-  getReadMessages(){
-   this.messageService.getReadMessages().subscribe({
-      next: result => this.readMessages= result.data,
-      error: result => alertify.error("An Error Occured!")
-    })
-  }
-
-
-  create(){
-    this.errors= {};
-    this.messageService.create(this.newMessage).subscribe({
-      next: result => this.messages.push(result.data),
-      error : result => {
-        alertify.error("An Error Occured!");
-      console.log(result.error.errors);
-        this.errors= result.error.errors;
-
-
+  getmessages() {
+    this.messageService.getAll().subscribe({
+      next: result => {
+        this.messages = result.data;
+        this.cdr.detectChanges(); // Veri gelince sayfayı tetikle
       },
-      complete: () => { alertify.success("Message Created!");
-        setTimeout(()=>{
-            location.reload();
-           }, 1000 );
-           this.errors= {};
-       }
+      error: result => alertify.error("An Error Occured!")
     })
   }
 
-
-
-
-  onSelected(model){
-
-  this.editMessage= model;
-
-  this.editMessage.isRead = true;
-
-  this.messageService.update(this.editMessage).subscribe({
-    error: result => console.log(result.error),
-    complete: ()=> {this.getReadMessages();
-      this.getUnReadMessages();
-    }
-  })
-  }
-
-
-  update(){
-    this.messageService.update(this.editMessage).subscribe({
-     error: result =>{ alertify.error("An Error Occured!");
-      this.errors = result.error.errors
-     },
-     complete: () => {alertify.success("Message Updated!");
-   setTimeout(()=>{
-            location.reload();
-           }, 1000 );
-
-             this.errors= {};
-
-     }
+  getUnReadMessages() {
+    this.messageService.getUnreadMessages().subscribe({
+      next: result => {
+        this.unreadMessages = result.data;
+        this.cdr.detectChanges(); // Okunmamış mesajlar gelince sayfayı tetikle
+      },
+      error: result => alertify.error("An Error Occured!")
     })
   }
 
-  async delete(id){
+  getReadMessages() {
+    this.messageService.getReadMessages().subscribe({
+      next: result => {
+        this.readMessages = result.data;
+        this.cdr.detectChanges(); // Okunmuş mesajlar gelince sayfayı tetikle
+      },
+      error: result => alertify.error("An Error Occured!")
+    })
+  }
 
-  const isConfirmed = await this.swal.areYouSure();
-
-  if(isConfirmed){
-
-  this.messageService.delete(id).subscribe({
-      error: result => alertify.error("An Error Occured!"),
-      complete: ()=>{ alertify.success("Message Deleted!");
-        this.getReadMessages();
-        this.getUnReadMessages();
+  create() {
+    this.errors = {};
+    this.messageService.create(this.newMessage).subscribe({
+      next: result => {
+        this.messages.push(result.data);
+        this.cdr.detectChanges();
+      },
+      error: result => {
+        alertify.error("An Error Occured!");
+        console.log(result.error.errors);
+        this.errors = result.error.errors;
+        this.cdr.detectChanges();
+      },
+      complete: () => {
+        alertify.success("Message Created!");
+        setTimeout(() => {
+          location.reload();
+        }, 1000);
+        this.errors = {};
       }
-
     })
-
-  }
-  else{
-    console.log("Delete Reverted")
   }
 
+  onSelected(model: any) {
+    this.editMessage = model;
+    this.editMessage.isRead = true;
+
+    this.messageService.update(this.editMessage).subscribe({
+      error: result => console.log(result.error),
+      complete: () => {
+        this.getReadMessages(); // İçindeki detectChanges çalışacak
+        this.getUnReadMessages(); // İçindeki detectChanges çalışacak
+        this.cdr.detectChanges(); // Seçim ve isRead değişimi sonrası arayüzü tazeledik
+      }
+    })
   }
 
+  update() {
+    this.messageService.update(this.editMessage).subscribe({
+      error: result => {
+        alertify.error("An Error Occured!");
+        this.errors = result.error.errors;
+        this.cdr.detectChanges();
+      },
+      complete: () => {
+        alertify.success("Message Updated!");
+        setTimeout(() => {
+          location.reload();
+        }, 1000);
+        this.errors = {};
+      }
+    })
+  }
+
+  async delete(id: any) {
+    const isConfirmed = await this.swal.areYouSure();
+
+    if (isConfirmed) {
+      this.messageService.delete(id).subscribe({
+        error: result => alertify.error("An Error Occured!"),
+        complete: () => {
+          alertify.success("Message Deleted!");
+          this.getReadMessages();
+          this.getUnReadMessages();
+        }
+      })
+    } else {
+      console.log("Delete Reverted")
+    }
+  }
 }

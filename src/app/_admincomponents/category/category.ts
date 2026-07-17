@@ -1,8 +1,9 @@
+import { Component, ChangeDetectorRef } from '@angular/core'; // 1. ChangeDetectorRef ekledik
 import { SweetalertService } from '../../_services/sweetalert-service';
-import { Component } from '@angular/core';
 import { CategoryService } from '../../_services/category-service';
 import { CategoryDto } from '../../_models/category';
-declare const alertify :any;
+
+declare const alertify: any;
 
 @Component({
   selector: 'admin-category',
@@ -11,27 +12,32 @@ declare const alertify :any;
   styleUrl: './category.css'
 })
 export class Category {
-
-constructor(private categoryService : CategoryService,
-            private swal: SweetalertService
-){
-
-  this.getCategories();
-}
-
-categories: CategoryDto[];
-newCategory: CategoryDto = new CategoryDto();
-editCategory:any = {};
-errors: any=[];
-
-
-getCategories(){
-  this.categoryService.getCategories().subscribe({
-    next: result=> this.categories= result.data,
-    error: result=> console.log(result.errors)
+  constructor(
+    private categoryService: CategoryService,
+    private swal: SweetalertService,
+    private cdr: ChangeDetectorRef // 2. constructor'a inject ettik
+  ) {
+    this.getCategories();
   }
-    )
-  };
+
+  categories: CategoryDto[] = [];
+  newCategory: CategoryDto = new CategoryDto();
+  editCategory: any = {};
+  errors: any = [];
+
+  getCategories() {
+    this.categoryService.getCategories().subscribe({
+      next: result => {
+        this.categories = result.data;
+
+        // 3. Veri başarıyla set edildikten sonra Angular'ı zorla tetikliyoruz:
+        this.cdr.detectChanges();
+      },
+      error: result => {
+        console.log(result.errors);
+      }
+    });
+  }
 
   createCategory(){
       this.categoryService.create(this.newCategory).subscribe({
