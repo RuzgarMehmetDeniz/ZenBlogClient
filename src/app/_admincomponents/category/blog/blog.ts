@@ -35,15 +35,16 @@ export class Blog implements OnInit {
     this.getCategories();
   }
 
-  getBlogs() {
-    this.blogService.getAll().subscribe({
-      next: result => {
-        this.blogs = result.data;
-        this.cdr.detectChanges(); // 3. Blog verileri gelince sayfayı tetikle
-      },
-      error: result => alertify.error("An Error Occured!")
-    })
-  }
+ getBlogs() {
+  this.blogService.getAll().subscribe({
+    next: result => {
+      this.blogs = result.data;
+      console.log('Ham blog verisi:', JSON.stringify(this.blogs, null, 2));
+      this.cdr.detectChanges();
+    },
+    error: result => alertify.error("An Error Occured!")
+  })
+}
 
   create() {
     this.errors = {};

@@ -1,4 +1,4 @@
-import {  AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
 import Swiper from 'swiper';
 import { Autoplay, Navigation, Pagination } from 'swiper/modules';
 import AOS from 'aos';
@@ -15,24 +15,21 @@ import { CategoryDto } from '../../_models/category';
   templateUrl: './home.html',
   styleUrl: './home.css'
 })
-export class Home implements OnInit, AfterViewInit  {
+export class Home implements OnInit, AfterViewInit {
   swiper: any;
   isMobileMenuOpen = false;
   latestBlogs: BlogDto[];
   categoriesWithBlogs: CategoryDto[];
 
-  constructor(private blogService: BlogService,
-              private categoryService: CategoryService
-  ){
+  constructor(
+    private blogService: BlogService,
+    private categoryService: CategoryService
+  ) { }
 
-  }
+  ngOnInit() {
 
-ngOnInit() {
-
-  this.getLatest5Blogs();
-  this.getCategoriesWithBlogs();
-
-
+    this.getLatest5Blogs();
+    this.getCategoriesWithBlogs();
 
     // Initialize AOS
     AOS.init({
@@ -79,13 +76,10 @@ ngOnInit() {
 
   ngAfterViewInit() {
     // Remove preloader after view is initialized
-
     const preloader = document.querySelector('#preloader');
     if (preloader) {
       preloader.remove();
     }
-
-
   }
 
   toggleMobileMenu() {
@@ -100,26 +94,40 @@ ngOnInit() {
     }
   }
 
-  getLatest5Blogs(){
+  getLatest5Blogs() {
     this.blogService.getLatest5Blogs().subscribe({
-      next: result => this.latestBlogs= result.data
+      next: result => this.latestBlogs = result.data
     })
   }
 
- getCategoriesWithBlogs(){
-  this.categoryService.getCategories().subscribe({
-    next: result => {
-      this.categoriesWithBlogs = result.data;
-      console.table(this.categoriesWithBlogs.map(c => ({
-        kategori: c.categoryName,
-        blogSayisi: c.blogs?.length,
-        blogBasliklari: c.blogs?.map(b => b.title).join(' | ')
-      })));
-    }
-  })
-}
+  getCategoriesWithBlogs() {
+    this.categoryService.getCategories().subscribe({
+      next: result => {
+        this.categoriesWithBlogs = result.data;
+      }
+    })
+  }
 
+  // --- Template'in her bölümüne farklı, tekrarsız blog dilimleri sağlayan yardımcılar ---
 
+  // Öne çıkan (feature) post: dizinin ilk elemanı
+  getFeaturedBlog(blogs: BlogDto[]): BlogDto | undefined {
+    return blogs?.[0];
+  }
 
+  // Sol taraftaki liste: 2., 3. ve 4. bloglar
+  getSideListBlogs(blogs: BlogDto[]): BlogDto[] {
+    return blogs?.slice(1, 4) ?? [];
+  }
+
+  // Sağdaki büyük post: 5. blog
+  getBigBlog(blogs: BlogDto[]): BlogDto | undefined {
+    return blogs?.[4];
+  }
+
+  // Sidebar: 6. bloglan itibaren kalan tüm bloglar
+  getSidebarBlogs(blogs: BlogDto[]): BlogDto[] {
+    return blogs?.slice(5) ?? [];
+  }
 
 }
