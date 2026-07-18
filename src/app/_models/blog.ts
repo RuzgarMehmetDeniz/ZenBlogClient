@@ -9,6 +9,7 @@ export class BlogDto{
   blogImage;
   description;
   categoryId;
+  categoryName;
   category: CategoryDto;
   userId;
   createdAt;

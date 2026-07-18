@@ -7,41 +7,40 @@
       <section id="blog-details" class="blog-details section">
         <div class="container">
 
-          @if (blog) {
+          @if (blog(); as currentBlog) {
           <article class="article">
 
             <div class="post-img">
-              <img [src]="blog.coverImage" alt="" class="img-fluid">
+              <img [src]="currentBlog.coverImage" alt="" class="img-fluid">
             </div>
 
-            <h2 class="title">{{ blog.title }}</h2>
+            <h2 class="title">{{ currentBlog.title }}</h2>
 
             <div class="meta-top">
               <ul>
                 <li class="d-flex align-items-center">
                   <i class="bi bi-person"></i>
-                  <a href="blog-details.html">{{ blog.user?.firstName }} {{ blog.user?.lastName }}</a>
+                  <a href="blog-details.html">{{ currentBlog.user?.firstName }} {{ currentBlog.user?.lastName }}</a>
                 </li>
                 <li class="d-flex align-items-center">
                   <i class="bi bi-clock"></i>
-                  <a href="blog-details.html"><time>{{ blog.createdAt | date }}</time></a>
+                  <a href="blog-details.html"><time>{{ currentBlog.createdAt | date }}</time></a>
                 </li>
                 <li class="d-flex align-items-center">
                   <i class="bi bi-chat-dots"></i>
-                  <a href="blog-details.html">{{ blog.comments?.length || 0 }} Comments</a>
+                  <a href="blog-details.html">{{ currentBlog.comments?.length || 0 }} Comments</a>
                 </li>
               </ul>
             </div><!-- End meta top -->
 
             <div class="content">
-              <img [src]="blog.blogImage" class="img-fluid" alt="">
-              <p>{{ blog.description }}</p>
+              <p>{{ currentBlog.description }}</p>
             </div><!-- End post content -->
 
             <div class="meta-bottom">
               <i class="bi bi-folder"></i>
               <ul class="cats">
-                <li><a href="#">{{ blog.category?.categoryName }}</a></li>
+                <li><a href="#">{{ currentBlog.category?.categoryName }}</a></li>
               </ul>
 
               <i class="bi bi-tags"></i>
@@ -62,23 +61,24 @@
       <section id="blog-comments" class="blog-comments section">
         <div class="container">
 
-          @if (blog) {
-          <h4 class="comments-count">{{ blog.comments?.length || 0 }} Comments</h4>
+          @if (blog(); as currentBlog) {
+          <h4 class="comments-count">{{ currentBlog.comments?.length || 0 }} Comments</h4>
 
-          @for (item of blog.comments; track item.id) {
-          <div class="comment">
-            <div class="d-flex">
-              <div class="comment-img"><img src="assets/img/blog/comments-1.jpg" alt=""></div>
-              <div>
-                <h5>
-                  <a href="">{{ item.firstName }} {{ item.lastName }}</a>
-                  <a href="#" class="reply"><i class="bi bi-reply-fill"></i> Reply</a>
-                </h5>
-                <time>{{ item.commentDate | date }}</time>
-                <p>{{ item.body }}</p>
-              </div>
-            </div>
-          </div><!-- End comment -->
+          @for (item of currentBlog.comments; track item.id) {
+         @if (item) {
+<div class="comment">
+  <div class="d-flex">
+    <div>
+      <h5>
+        <a href="">{{ item.firstName }} {{ item.lastName }}</a>
+        <a href="#" class="reply"><i class="bi bi-reply-fill"></i> Reply</a>
+      </h5>
+      <time>{{ item.commentDate | date }}</time>
+      <p>{{ item.body }}</p>
+    </div>
+  </div>
+</div><!-- End comment -->
+}
           }
           }
 
@@ -95,27 +95,16 @@
 
       <div class="widgets-container">
 
-        <!-- Blog Author Widget -->
-        <div class="blog-author-widget widget-item">
-          <div class="d-flex flex-column align-items-center">
-            <div class="d-flex align-items-center w-100">
-              <img src="assets/img/blog/blog-author.jpg" class="rounded-circle flex-shrink-0" alt="">
-              <div>
-                <h4>Jane Smith</h4>
-                <div class="social-links">
-                  <a href="https://x.com/#"><i class="bi bi-twitter-x"></i></a>
-                  <a href="https://facebook.com/#"><i class="bi bi-facebook"></i></a>
-                  <a href="https://instagram.com/#"><i class="biu bi-instagram"></i></a>
-                  <a href="https://instagram.com/#"><i class="biu bi-linkedin"></i></a>
-                </div>
-              </div>
-            </div>
-            <p>
-              Itaque quidem optio quia voluptatibus dolorem dolor. Modi eum sed possimus accusantium.
-              Quas repellat voluptatem officia numquam sint aspernatur voluptas.
-            </p>
-          </div>
-        </div><!--/Blog Author Widget -->
+       <!-- Blog Author Widget -->
+<div class="blog-author-widget widget-item">
+  <div class="d-flex flex-column align-items-center">
+    <h4>Jane Smith</h4>
+    <p>
+      Itaque quidem optio quia voluptatibus dolorem dolor. Modi eum sed possimus accusantium.
+      Quas repellat voluptatem officia numquam sint aspernatur voluptas.
+    </p>
+  </div>
+</div><!--/Blog Author Widget -->
 
         <!-- Search Widget -->
         <div class="search-widget widget-item">
@@ -129,7 +118,7 @@
         <!-- Recent Posts Widget -->
         <div class="recent-posts-widget widget-item">
           <h3 class="widget-title">Recent Posts</h3>
-          @for (item of latestBlogs; track item.id) {
+          @for (item of latestBlogs(); track item.id) {
           <div class="post-item">
             <img [src]="item.coverImage" alt="" class="flex-shrink-0">
             <div>
