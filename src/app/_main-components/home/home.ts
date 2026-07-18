@@ -106,11 +106,18 @@ ngOnInit() {
     })
   }
 
-  getCategoriesWithBlogs(){
-    this.categoryService.getCategories().subscribe({
-      next: result => this.categoriesWithBlogs = result.data
-    })
-  }
+ getCategoriesWithBlogs(){
+  this.categoryService.getCategories().subscribe({
+    next: result => {
+      this.categoriesWithBlogs = result.data;
+      console.table(this.categoriesWithBlogs.map(c => ({
+        kategori: c.categoryName,
+        blogSayisi: c.blogs?.length,
+        blogBasliklari: c.blogs?.map(b => b.title).join(' | ')
+      })));
+    }
+  })
+}
 
 
 
